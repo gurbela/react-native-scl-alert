@@ -6,7 +6,9 @@ import {
   View,
   ViewPropTypes,
   StyleSheet,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform
 } from 'react-native'
 import { SCLAlertHeader, SCLAlertTitle, SCLAlertSubtitle } from '../components'
 import { height } from '../helpers/dimensions'
@@ -31,7 +33,21 @@ class SCLAlert extends React.Component {
   }
 
   state = {
-    show: false
+    show: false,
+    keyboardSpace: 0,
+    topHeight: Platform.OS === 'ios' ? 170 : 350
+  }
+
+  constructor(props) {
+    super(props);
+    //for get keyboard height
+    Keyboard.addListener('keyboardDidShow', (frames) => {
+      if (!frames.endCoordinates) return;
+      this.setState({ keyboardSpace: frames.endCoordinates.height });
+    });
+    Keyboard.addListener('keyboardDidHide', (frames) => {
+      this.setState({ keyboardSpace: 0 });
+    });
   }
 
   slideAnimation = new Animated.Value(0)
@@ -115,7 +131,14 @@ class SCLAlert extends React.Component {
             <View style={[styles.overlay, this.props.overlayStyle]} />
           </TouchableWithoutFeedback>
           <Animated.View
-            style={[styles.contentContainer, { transform: this.interpolationTranslate }]}
+            style={[
+              styles.contentContainer,
+              {
+                transform: this.interpolationTranslate,
+                //change modal position by keyboardspace
+                top: this.state.keyboardSpace ? this.state.topHeight - this.state.keyboardSpace : -30,
+              }
+            ]}
           >
             <SCLAlertHeader {...this.props} />
             <View style={styles.innerContent}>
