@@ -17,6 +17,7 @@ class SCLAlert extends React.Component {
     children: PropTypes.node,
     show: PropTypes.bool,
     cancellable: PropTypes.bool,
+    onHide: PropTypes.func,
     onRequestClose: PropTypes.func.isRequired,
     slideAnimationDuration: PropTypes.number,
     overlayStyle: ViewPropTypes.style
@@ -43,6 +44,10 @@ class SCLAlert extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (this.props.show !== this.state.show) {
       return this[this.props.show ? 'show' : 'hide']()
+    }
+
+    if (this.state.show !== prevState.show && this.state.show === false) {
+      this.props.onHide && this.props.onHide()
     }
   }
 
