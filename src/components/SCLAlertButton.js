@@ -9,20 +9,22 @@ SCLAlertButton.propTypes = {
   containerStyle: ViewPropTypes.style,
   textStyle: Text.propTypes.style,
   theme: themeType,
-  onPress: PropTypes.func.isRequired
+  onPress: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
 }
 
 SCLAlertButton.defaultProps = {
   containerStyle: {},
   textStyle: {},
-  theme: defaultThemeType
+  theme: defaultThemeType,
+  disabled: false
 }
 
 function SCLAlertButton(props) {
   const childrenType = typeof props.children
 
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={props.onPress}>
+    <TouchableOpacity activeOpacity={0.8} onPress={props.onPress} disabled={props.disabled}>
       <View
         style={[
           styles.container,
