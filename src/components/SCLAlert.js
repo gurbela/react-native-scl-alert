@@ -41,20 +41,25 @@ class SCLAlert extends React.Component {
 
   constructor(props) {
     super(props);
-    //for get keyboard height
-    Keyboard.addListener('keyboardDidShow', (frames) => {
-      if (!frames.endCoordinates) return;
-      this.setState({ keyboardSpace: frames.endCoordinates.height });
-    });
-    Keyboard.addListener('keyboardDidHide', (frames) => {
-      this.setState({ keyboardSpace: 0 });
-    });
   }
 
   slideAnimation = new Animated.Value(0)
 
   componentDidMount() {
     this.props.show && this.show()
+
+    //for get keyboard height
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', async (frames) => {
+      if (!frames.endCoordinates) return;
+      await this.setState(prevState => {
+        return { ...prevState, keyboardSpace: frames.endCoordinates.height }
+      })
+    })
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', async (frames) => {
+      await this.setState(prevState => {
+        return { ...prevState, keyboardSpace: 0 }
+      })
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -65,6 +70,11 @@ class SCLAlert extends React.Component {
     if (this.state.show !== prevState.show && this.state.show === false) {
       this.props.onHide && this.props.onHide()
     }
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove()
+    this.keyboardDidHideListener.remove()
   }
 
   /**
