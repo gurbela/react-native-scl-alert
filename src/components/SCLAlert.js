@@ -8,7 +8,8 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
-  Platform
+  Platform,
+  Dimensions
 } from 'react-native'
 import { SCLAlertHeader, SCLAlertTitle, SCLAlertSubtitle } from '../components'
 import { height } from '../helpers/dimensions'
@@ -36,7 +37,8 @@ class SCLAlert extends React.Component {
   state = {
     show: false,
     keyboardSpace: 0,
-    topHeight: Platform.OS === 'ios' ? 170 : 350
+    topHeight: Dimensions.get('window').height,
+    subtractHeight: Platform.OS === 'ios' ? 345 : 60
   }
 
   constructor(props) {
@@ -66,15 +68,14 @@ class SCLAlert extends React.Component {
     if (this.props.show !== this.state.show) {
       return this[this.props.show ? 'show' : 'hide']()
     }
-
     if (this.state.show !== prevState.show && this.state.show === false) {
       this.props.onHide && this.props.onHide()
     }
   }
 
   componentWillUnmount() {
-    this.keyboardDidShowListener.remove()
-    this.keyboardDidHideListener.remove()
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
   /**
@@ -151,7 +152,7 @@ class SCLAlert extends React.Component {
               {
                 transform: this.interpolationTranslate,
                 //change modal position by keyboardspace
-                top: this.state.keyboardSpace ? this.state.topHeight - this.state.keyboardSpace : -30,
+                top: this.state.keyboardSpace ? this.state.topHeight - (this.state.topHeight - this.state.keyboardSpace + this.state.subtractHeight) : 0,
               }
             ]}
           >
